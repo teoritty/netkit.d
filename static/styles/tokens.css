@@ -1,0 +1,142 @@
+/* ============================================================
+   Design tokens — CSS custom properties.
+   Three themes: light (default) | dark | hacker.
+   All colors, fonts, and spacing are variables to enable theme switching.
+   ============================================================ */
+:root,
+[data-theme="light"] {
+  --bg-base:        #F0F4F8;
+  --bg-surface:     #FFFFFF;
+  --bg-elevated:    #FFFFFF;
+  --bg-input:       #F8FAFC;
+  --bg-hover:       #F1F5F9;
+  --bg-code:        #F1F5F9;
+
+  --text-primary:   #0F172A;
+  --text-secondary: #475569;
+  --text-muted:     #94A3B8;
+  --text-on-accent: #FFFFFF;
+
+  --accent:         #2563EB;
+  --accent-hover:   #1D4ED8;
+  --accent-soft:    #EFF6FF;
+  --accent-border:  #BFDBFE;
+
+  --success:        #16A34A;
+  --success-soft:   #F0FDF4;
+  --error:          #DC2626;
+  --error-soft:     #FEF2F2;
+  --warning:        #D97706;
+  --warning-soft:   #FFFBEB;
+
+  --border:         #E2E8F0;
+  --border-focus:   #2563EB;
+
+  --shadow-sm:      0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:      0 4px 12px rgba(0,0,0,.1), 0 2px 4px rgba(0,0,0,.06);
+  --shadow-lg:      0 10px 30px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+
+  --sidebar-bg:     #1E293B;
+  --sidebar-text:   #CBD5E1;
+  --sidebar-muted:  #64748B;
+  --sidebar-active: #2563EB;
+  --sidebar-hover:  rgba(255,255,255,.07);
+  --sidebar-accent: #38BDF8;
+
+  --radius-sm:      6px;
+  --radius-md:      10px;
+  --radius-lg:      16px;
+  --radius-xl:      20px;
+
+  --font-sans:      'Inter', system-ui, sans-serif;
+  --font-mono:      'JetBrains Mono', 'Fira Code', monospace;
+  --font-size-base: 14px;
+
+  --transition:     0.2s ease;
+  --sidebar-w:      240px;
+}
+
+[data-theme="dark"] {
+  --bg-base:        #0F172A;
+  --bg-surface:     #1E293B;
+  --bg-elevated:    #243247;
+  --bg-input:       #1A2740;
+  --bg-hover:       #2D3F59;
+  --bg-code:        #0F1E33;
+
+  --text-primary:   #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted:     #475569;
+  --text-on-accent: #0F172A;
+
+  --accent:         #38BDF8;
+  --accent-hover:   #7DD3FC;
+  --accent-soft:    rgba(56,189,248,.12);
+  --accent-border:  rgba(56,189,248,.3);
+
+  --success:        #4ADE80;
+  --success-soft:   rgba(74,222,128,.1);
+  --error:          #F87171;
+  --error-soft:     rgba(248,113,113,.1);
+  --warning:        #FBBF24;
+  --warning-soft:   rgba(251,191,36,.1);
+
+  --border:         #2D3F59;
+  --border-focus:   #38BDF8;
+
+  --shadow-sm:      0 1px 3px rgba(0,0,0,.3);
+  --shadow-md:      0 4px 12px rgba(0,0,0,.4);
+  --shadow-lg:      0 10px 30px rgba(0,0,0,.5);
+
+  --sidebar-bg:     #0A1628;
+  --sidebar-text:   #94A3B8;
+  --sidebar-muted:  #475569;
+  --sidebar-active: #38BDF8;
+  --sidebar-hover:  rgba(255,255,255,.05);
+  --sidebar-accent: #38BDF8;
+}
+
+[data-theme="hacker"] {
+  --bg-base:        #000000;
+  --bg-surface:     #0A0A0A;
+  --bg-elevated:    #0F1A0F;
+  --bg-input:       #050F05;
+  --bg-hover:       #0F1A0F;
+  --bg-code:        #000000;
+
+  --text-primary:   #22C55E;
+  --text-secondary: #16A34A;
+  --text-muted:     #14532D;
+  --text-on-accent: #000000;
+
+  --accent:         #22C55E;
+  --accent-hover:   #4ADE80;
+  --accent-soft:    rgba(34,197,94,.08);
+  --accent-border:  rgba(34,197,94,.3);
+
+  --success:        #86EFAC;
+  --success-soft:   rgba(134,239,172,.1);
+  --error:          #F87171;
+  --error-soft:     rgba(248,113,113,.1);
+  --warning:        #86EFAC;
+  --warning-soft:   rgba(134,239,172,.08);
+
+  --border:         rgba(34,197,94,.2);
+  --border-focus:   #22C55E;
+
+  --shadow-sm:      0 0 8px rgba(34,197,94,.1);
+  --shadow-md:      0 0 20px rgba(34,197,94,.12);
+  --shadow-lg:      0 0 40px rgba(34,197,94,.15);
+
+  --sidebar-bg:     #000000;
+  --sidebar-text:   #22C55E;
+  --sidebar-muted:  #14532D;
+  --sidebar-active: #4ADE80;
+  --sidebar-hover:  rgba(34,197,94,.07);
+  --sidebar-accent: #4ADE80;
+
+  /* In the hacker theme all text is monospace via remapped font variables
+     (no !important: every element uses these variables). */
+  --font-sans:      'JetBrains Mono', monospace;
+  --font-mono:      'JetBrains Mono', monospace;
+}

@@ -1,0 +1,13 @@
+services:
+  network-tools:
+    build: .
+    image: network-tools:latest
+    container_name: network-tools
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    # The Ping tool sends ICMP echo requests. Unprivileged containers can do
+    # this if the kernel allows the "ping group". This line enables it without
+    # granting NET_RAW / running as root.
+    sysctls:
+      - net.ipv4.ping_group_range=0 2147483647
