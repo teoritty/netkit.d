@@ -12,27 +12,21 @@ subnetting, VLSM, route summarization, address classification, and live
 diagnostics (ping, traceroute, DNS, Whois, port scanning) — into a single,
 fast, dependency-light interface.
 
-The backend is built with FastAPI following Clean Architecture and SOLID
-principles; the frontend is plain ES-module JavaScript with no build step and
-no runtime framework. The interface ships in **English and Russian** (switchable
-at runtime) with three themes — light, dark, and a high-contrast "hacker" mode.
-
 ## Overview
 
-Network Tools replaces the scattered collection of online subnet calculators,
-CLI one-liners, and half-remembered formulas that network engineers reach for
-every day. Every calculation runs against Python's standard `ipaddress`
-library, so results are authoritative rather than approximate, and the
-diagnostic tools shell out to the host's real `ping`/`traceroute` and perform
-genuine DNS, RDAP, and TCP queries.
+Network Tools gathers the calculators and diagnostics that are otherwise
+scattered across online subnet tools and CLI one-liners into a single
+interface. Every calculation runs against Python's standard `ipaddress`
+library, so results are exact rather than approximate, and the diagnostic
+tools shell out to the host's real `ping`/`traceroute` and perform genuine
+DNS, RDAP, and TCP queries.
 
 ### Who it is for
 
-- **Network and systems engineers** — quick, reliable subnet math and
-  on-the-spot diagnostics without leaving the browser or trusting a random
-  third-party site with internal addressing.
+- **Network and systems engineers** — quick subnet math and on-the-spot
+  diagnostics without leaving the browser.
 - **DevOps and platform engineers** — MTU/overhead planning for tunnels, load
-  balancer config scaffolding, and port reachability checks during deployments.
+  balancer config generation, and port reachability checks during deployments.
 - **Students and people learning computer networking** — a practice and
   self-checking aid. Work a subnetting or VLSM problem by hand, then verify the
   network address, host range, broadcast, and mask against the tool's output.
@@ -54,87 +48,53 @@ calculation renders in place; diagnostics stream their output into the panel.
 | ![Hacker theme — VLSM splitter](docs/screenshots/hacker-theme.png) | ![OSI model reference table](docs/screenshots/osi-model.png) |
 | Monospace, green-on-black terminal aesthetic (VLSM splitter). | Color-coded OSI layer reference; one of several built-in cheat sheets. |
 
-## Architecture
-
-The codebase is organized as concentric layers with dependencies pointing
-inward only:
-
-- **Domain** (`src/domain`) — value objects (`IPv4Address`, `Subnet`, `Port`,
-  …), domain services (subnet calculation, VLSM allocation, summarization,
-  classification), reference data, and business exceptions. Pure Python, no I/O.
-- **Application** (`src/application`) — one use case per scenario, request/result
-  DTOs, and `Protocol` ports for everything that touches the outside world.
-- **Infrastructure** (`src/infrastructure`) — adapters that implement the ports:
-  subprocess ping/traceroute, dnspython (with a socket fallback), ipwhois,
-  asyncio port scanning, and environment-driven settings.
-- **Presentation** (`src/api` + `static/`) — FastAPI routers that only
-  (de)serialize and delegate, a single exception handler that maps domain and
-  infrastructure errors onto HTTP status codes, and an ES-module frontend split
-  into services, a store, and smart/dumb components.
-
-Concrete implementations are wired together in one place, `composition_root.py`;
-there are no global singletons or service locators. Optional dependencies
-(`dnspython`, `ipwhois`) degrade gracefully: if a library is absent, a fallback
-or "feature unavailable" adapter is wired in instead.
-
 ## Features
 
 ### Calculation tools
 
 - **Subnet calculator** — Given an IPv4 address and a prefix, returns the
   network address, first and last usable host, broadcast address, wildcard mask,
-  and usable host count, with a visual breakdown of network vs. host bits. Use
-  it to plan or verify a single subnet, or to check homework.
+  and usable host count, with a visual breakdown of network vs. host bits.
 - **Network grouping** — Takes several IP/mask pairs and groups them by the
-  network they belong to. Use it to confirm whether two hosts share a subnet or
-  to audit a list of addresses.
+  network they belong to.
 - **VLSM splitter** — Given a parent network and a list of per-subnet host
   requirements, allocates variable-length subnets largest-first and reports the
-  CIDR, mask, host range, and capacity of each. Use it to design an efficient
-  addressing plan and to practice VLSM exercises.
+  CIDR, mask, host range, and capacity of each.
 - **Supernet / summarization** — Collapses a list of networks into the minimal
-  set of aggregate CIDR blocks. Use it to shrink routing tables or to verify a
-  summarization answer.
+  set of aggregate CIDR blocks.
 - **IP range to CIDR** — Converts an arbitrary start–end address range into the
-  smallest set of CIDR blocks that covers it exactly. Use it for ACLs, firewall
-  rules, or allow/deny lists expressed as ranges.
-- **Number base converter** — Converts integers between bases 2–16. Use it for
+  smallest set of CIDR blocks that covers it exactly, for ACLs, firewall rules,
+  or allow/deny lists expressed as ranges.
+- **Number base converter** — Converts integers between bases 2–16, for
   binary/hex subnet-mask reasoning and bitwise work.
 - **IPv4 / IPv6 classification** — Reports the category of an address (Global,
-  Private, Loopback, Multicast, Reserved, Link-Local, Unspecified). Use it to
-  understand how an address will be treated or to study address scopes.
+  Private, Loopback, Multicast, Reserved, Link-Local, Unspecified).
 - **Port information** — Looks up the service commonly associated with a TCP/UDP
-  port number. Use it as a quick reference when reading logs or firewall rules.
+  port number.
 - **IPv6 converter** — Expands and compresses an IPv6 address between its full
-  and shorthand notations. Use it to normalize addresses for comparison or
-  configuration.
+  and shorthand notations.
 
 ### Diagnostics
 
 - **Ping** — Sends ICMP echo requests to a host via the system `ping` command
-  and reports the raw output and average round-trip time. Use it to check
-  reachability and basic latency.
+  and reports the raw output and average round-trip time.
 - **Traceroute** — Traces the network path to a host and lists the intermediate
-  hops. Use it to locate where connectivity breaks or latency is introduced.
-- **DNS lookup** — Resolves A, AAAA, MX, TXT, NS, CNAME, and PTR records. Use it
-  to verify DNS configuration or investigate resolution problems.
+  hops.
+- **DNS lookup** — Resolves A, AAAA, MX, TXT, NS, CNAME, and PTR records.
 - **Whois / ASN** — Performs an RDAP lookup for an IPv4 address and returns the
-  ASN, announcing CIDR, country, organization, and abuse contacts. Use it to
-  identify who owns or routes an address.
+  ASN, announcing CIDR, country, organization, and abuse contacts.
 - **Port scanner** — Asynchronously checks a list or range of TCP ports on a
-  host and reports each as open, closed, or filtered. Use it to confirm which
-  services are exposed on infrastructure you are responsible for.
+  host and reports each as open, closed, or filtered.
 
 ### Utilities and reference
 
 - **MTU / bandwidth calculator** — Computes the effective MTU and useful
   throughput for common tunnel and encapsulation types (GRE, IPsec, VXLAN,
-  PPPoE, MPLS, …). Use it when planning overlays and diagnosing fragmentation.
+  PPPoE, MPLS, …), for planning overlays and diagnosing fragmentation.
 - **Config generator** — Produces load-balancing configuration snippets for
-  Nginx, HAProxy, and Traefik from a list of backend servers. Use it to
-  scaffold a reverse proxy quickly.
+  Nginx, HAProxy, and Traefik from a list of backend servers.
 - **Base64 / Hex / URL encoder** — Encodes and decodes text between Base64,
-  hexadecimal, and URL encoding. Use it for quick payload inspection.
+  hexadecimal, and URL encoding.
 - **Reference tables** — Reserved IPv4 and IPv6 ranges, the seven-layer OSI
   model with representative protocols, and routing administrative distances.
   Useful as a study aid and a quick lookup during configuration.
@@ -192,6 +152,30 @@ pip install -r requirements-dev.txt
 pytest -q
 ```
 
+
+## Architecture
+
+The codebase is organized as concentric layers with dependencies pointing
+inward only:
+
+- **Domain** (`src/domain`) — value objects (`IPv4Address`, `Subnet`, `Port`,
+  …), domain services (subnet calculation, VLSM allocation, summarization,
+  classification), reference data, and business exceptions. Pure Python, no I/O.
+- **Application** (`src/application`) — one use case per scenario, request/result
+  DTOs, and `Protocol` ports for everything that touches the outside world.
+- **Infrastructure** (`src/infrastructure`) — adapters that implement the ports:
+  subprocess ping/traceroute, dnspython (with a socket fallback), ipwhois,
+  asyncio port scanning, and environment-driven settings.
+- **Presentation** (`src/api` + `static/`) — FastAPI routers that only
+  (de)serialize and delegate, a single exception handler that maps domain and
+  infrastructure errors onto HTTP status codes, and an ES-module frontend split
+  into services, a store, and smart/dumb components.
+
+Concrete implementations are wired together in one place, `composition_root.py`;
+there are no global singletons or service locators. Optional dependencies
+(`dnspython`, `ipwhois`) degrade gracefully: if a library is absent, a fallback
+or "feature unavailable" adapter is wired in instead.
+
 ## Project structure
 
 ```
@@ -234,8 +218,7 @@ netkit.d/
 
 - The Ping and Traceroute tools invoke the host's `ping` and `traceroute`
   binaries; both are preinstalled in the Docker image.
-- The Port Scanner and Ping tools are intended for diagnosing infrastructure you
-  control. Only use them against hosts you are authorized to probe.
+- Only use the Port Scanner and Ping tools against hosts you are authorized to probe.
 
 ## License
 
